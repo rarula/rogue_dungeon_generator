@@ -19,7 +19,13 @@ pub struct Rectangle {
 }
 
 #[derive(Debug)]
+pub struct Path {
+    pub rect: Rectangle,
+    pub is_horizontal: bool,
+}
+
+#[derive(Debug)]
 pub struct DividedArea {
     pub rect: Rectangle,
-    pub paths: Vec<Rectangle>,
+    pub paths: Vec<Path>,
 }

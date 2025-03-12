@@ -49,7 +49,7 @@ pub fn create_paths(
                         let path_offset = args.rng.random_range(0..range);
                         let path_pos = path_offset + rect.pos.y + 1;
 
-                        let path = Rectangle {
+                        let path_rect = Rectangle {
                             pos: Position {
                                 x: rect.pos.x,
                                 y: path_pos,
@@ -59,9 +59,13 @@ pub fn create_paths(
                                 y: args.path_size,
                             },
                         };
+                        let path = Path {
+                            rect: path_rect,
+                            is_horizontal,
+                        };
                         let area = DividedArea {
-                            paths: vec![path],
                             rect,
+                            paths: vec![path],
                         };
 
                         Ok(area)
@@ -75,7 +79,7 @@ pub fn create_paths(
                         let path_offset = args.rng.random_range(0..range);
                         let path_pos = path_offset + rect.pos.x + 1;
 
-                        let path = Rectangle {
+                        let path_rect = Rectangle {
                             pos: Position {
                                 x: path_pos,
                                 y: rect.pos.y,
@@ -85,9 +89,13 @@ pub fn create_paths(
                                 y: rect.size.y,
                             },
                         };
+                        let path = Path {
+                            rect: path_rect,
+                            is_horizontal,
+                        };
                         let area = DividedArea {
-                            paths: vec![path],
                             rect,
+                            paths: vec![path],
                         };
 
                         Ok(area)

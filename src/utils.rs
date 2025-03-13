@@ -27,5 +27,6 @@ pub struct Path {
 #[derive(Debug)]
 pub struct DividedArea {
     pub rect: Rectangle,
-    pub paths: Vec<Path>,
+    pub path: Path,
+    pub sub_paths: Vec<Path>,
 }

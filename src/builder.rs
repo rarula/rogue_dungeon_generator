@@ -65,7 +65,8 @@ pub fn create_paths(
                         };
                         let area = DividedArea {
                             rect,
-                            paths: vec![path],
+                            path,
+                            sub_paths: Vec::new(),
                         };
 
                         Ok(area)
@@ -95,7 +96,8 @@ pub fn create_paths(
                         };
                         let area = DividedArea {
                             rect,
-                            paths: vec![path],
+                            path,
+                            sub_paths: Vec::new(),
                         };
 
                         Ok(area)

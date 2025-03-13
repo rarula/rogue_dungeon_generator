@@ -17,5 +17,18 @@ pub fn generate_0(args: &Args) -> Vec2<Rectangle> {
 
 pub fn generate_1(args: &mut Args) -> Result<Vec2<DividedArea>, GenerationError> {
     let field = builder::create_field(args);
-    builder::create_paths(args, field)
+    let field = builder::create_paths(args, field);
+
+    field
+}
+
+pub fn generate_2(args: &mut Args) -> Result<Vec2<DividedArea>, GenerationError> {
+    let field = builder::create_field(args);
+    let field = match builder::create_paths(args, field) {
+        Ok(v) => v,
+        Err(e) => return Err(e),
+    };
+    let field = builder::extend_paths(args, field);
+
+    Ok(field)
 }

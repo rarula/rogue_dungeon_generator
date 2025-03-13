@@ -123,3 +123,109 @@ pub fn create_paths(
 
     Ok(vec)
 }
+
+pub fn extend_paths(args: &Args, mut field: Vec2<DividedArea>) -> Vec2<DividedArea> {
+    for y in 0..field.len() {
+        for x in 0..field[y].len() {
+            let is_horizontal = field[y][x].path.is_horizontal;
+
+            if is_horizontal {
+                let pos_y = field[y][x].path.rect.pos.y;
+
+                // Extend the path to the left
+                if 0 < x {
+                    let target_area = &mut field[y][x - 1];
+                    let target_path = &target_area.path;
+
+                    let pos = target_path.rect.pos.x + target_path.rect.size.x;
+                    let size = target_area.rect.pos.x + target_area.rect.size.x - pos;
+
+                    let rect = Rectangle {
+                        pos: Position { x: pos, y: pos_y },
+                        size: Size {
+                            x: size,
+                            y: args.path_size,
+                        },
+                    };
+                    let path = Path {
+                        rect,
+                        is_horizontal,
+                    };
+
+                    target_area.sub_paths.push(path);
+                }
+                // Extend the path to the right
+                if x < field[y].len() - 1 {
+                    let target_area = &mut field[y][x + 1];
+                    let target_path = &target_area.path;
+
+                    let pos = target_area.rect.pos.x;
+                    let size = target_path.rect.pos.x - pos;
+
+                    let rect = Rectangle {
+                        pos: Position { x: pos, y: pos_y },
+                        size: Size {
+                            x: size,
+                            y: args.path_size,
+                        },
+                    };
+                    let path = Path {
+                        rect,
+                        is_horizontal,
+                    };
+
+                    target_area.sub_paths.push(path);
+                }
+            } else {
+                let pos_x = field[y][x].path.rect.pos.x;
+
+                // Extend the path to the top
+                if 0 < y {
+                    let target_area = &mut field[y - 1][x];
+                    let target_path = &target_area.path;
+
+                    let pos = target_path.rect.pos.y + target_path.rect.size.y;
+                    let size = target_area.rect.pos.y + target_area.rect.size.y - pos;
+
+                    let rect = Rectangle {
+                        pos: Position { x: pos_x, y: pos },
+                        size: Size {
+                            x: args.path_size,
+                            y: size,
+                        },
+                    };
+                    let path = Path {
+                        rect,
+                        is_horizontal,
+                    };
+
+                    target_area.sub_paths.push(path);
+                }
+                // Extend the path to the bottom
+                if y < field.len() - 1 {
+                    let target_area = &mut field[y + 1][x];
+                    let target_path = &target_area.path;
+
+                    let pos = target_area.rect.pos.y;
+                    let size = target_path.rect.pos.y - pos;
+
+                    let rect = Rectangle {
+                        pos: Position { x: pos_x, y: pos },
+                        size: Size {
+                            x: args.path_size,
+                            y: size,
+                        },
+                    };
+                    let path = Path {
+                        rect,
+                        is_horizontal,
+                    };
+
+                    target_area.sub_paths.push(path);
+                }
+            }
+        }
+    }
+
+    field
+}

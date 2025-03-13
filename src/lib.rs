@@ -32,6 +32,14 @@ mod tests {
 
             assert!(output.is_ok());
         }
+
+        #[test]
+        fn step_2() {
+            let mut args = create_args();
+            let output = generator::generate_2(&mut args);
+
+            assert!(output.is_ok());
+        }
     }
 
     mod debug_all_steps {
@@ -50,6 +58,17 @@ mod tests {
         fn gen_1() {
             let mut args = create_args();
             let output = generator::generate_1(&mut args);
+
+            match output {
+                Ok(v) => println!("GENERATED:\n{:#?}", v),
+                Err(e) => println!("ERROR:\n{}", e),
+            }
+        }
+
+        #[test]
+        fn gen_2() {
+            let mut args = create_args();
+            let output = generator::generate_2(&mut args);
 
             match output {
                 Ok(v) => println!("GENERATED:\n{:#?}", v),

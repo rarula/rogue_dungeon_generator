@@ -229,3 +229,151 @@ pub fn extend_paths(args: &Args, mut field: Vec2<DividedArea>) -> Vec2<DividedAr
 
     field
 }
+
+pub fn combine_regions(field: &Vec2<DividedArea>) -> Vec<Rectangle> {
+    let mut vec: Vec<Rectangle> = Vec::new();
+
+    for y in 0..field.len() {
+        for x in 0..field[y].len() {
+            if y == 0 {
+                match field[y][x].region(Quadrant::RightTop) {
+                    Region::Top(sr) => {
+                        if x == 0 {
+                            if let Region::LeftTop(r) = field[y][x + 1].region(Quadrant::LeftTop) {
+                                vec.push(combine_x(sr, r));
+                            }
+                        }
+                    }
+                    Region::RightTop(sr) => {
+                        if let Region::Top(r) = field[y][x + 1].region(Quadrant::LeftTop) {
+                            if x < field[y].len() - 2 {
+                                let sr = combine_x(sr, r);
+                                if let Region::LeftTop(r) =
+                                    field[y][x + 2].region(Quadrant::LeftTop)
+                                {
+                                    vec.push(combine_x(sr, r));
+                                }
+                            } else {
+                                vec.push(combine_x(sr, r));
+                            }
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            if y == field.len() - 1 {
+                match field[y][x].region(Quadrant::RightBottom) {
+                    Region::Bottom(sr) => {
+                        if x == 0 {
+                            if let Region::LeftBottom(r) =
+                                field[y][x + 1].region(Quadrant::LeftBottom)
+                            {
+                                vec.push(combine_x(sr, r));
+                            }
+                        }
+                    }
+                    Region::RightBottom(sr) => {
+                        if let Region::Bottom(r) = field[y][x + 1].region(Quadrant::LeftBottom) {
+                            if x < field[y].len() - 2 {
+                                let sr = combine_x(sr, r);
+                                if let Region::LeftBottom(r) =
+                                    field[y][x + 2].region(Quadrant::LeftBottom)
+                                {
+                                    vec.push(combine_x(sr, r));
+                                }
+                            } else {
+                                vec.push(combine_x(sr, r));
+                            }
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            if x == 0 {
+                match field[y][x].region(Quadrant::LeftBottom) {
+                    Region::Left(sr) => {
+                        if y == 0 {
+                            if let Region::LeftTop(r) = field[y + 1][x].region(Quadrant::LeftTop) {
+                                vec.push(combine_y(sr, r));
+                            }
+                        }
+                    }
+                    Region::LeftBottom(sr) => {
+                        if let Region::Left(r) = field[y + 1][x].region(Quadrant::LeftTop) {
+                            if y < field.len() - 2 {
+                                let sr = combine_y(sr, r);
+                                if let Region::LeftTop(r) =
+                                    field[y + 2][x].region(Quadrant::LeftTop)
+                                {
+                                    vec.push(combine_y(sr, r));
+                                }
+                            } else {
+                                vec.push(combine_y(sr, r));
+                            }
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            if x == field[y].len() - 1 {
+                match field[y][x].region(Quadrant::RightBottom) {
+                    Region::Right(sr) => {
+                        if y == 0 {
+                            if let Region::RightTop(r) = field[y + 1][x].region(Quadrant::RightTop)
+                            {
+                                vec.push(combine_y(sr, r));
+                            }
+                        }
+                    }
+                    Region::RightBottom(sr) => {
+                        if let Region::Right(r) = field[y + 1][x].region(Quadrant::RightTop) {
+                            if y < field.len() - 2 {
+                                let sr = combine_y(sr, r);
+                                if let Region::RightTop(r) =
+                                    field[y + 2][x].region(Quadrant::RightTop)
+                                {
+                                    vec.push(combine_y(sr, r));
+                                }
+                            } else {
+                                vec.push(combine_y(sr, r));
+                            }
+                        }
+                    }
+                    _ => (),
+                }
+            }
+            if y < field.len() - 1 && x < field[y].len() - 1 {
+                if let Region::RightBottom(sr) = field[y][x].region(Quadrant::RightBottom) {
+                    if let Region::LeftBottom(r0) = field[y][x + 1].region(Quadrant::LeftBottom) {
+                        if let Region::RightTop(r1) = field[y + 1][x].region(Quadrant::RightTop) {
+                            let x_rect = combine_x(sr, r0);
+                            let xy_rect = combine_y(x_rect, r1);
+                            vec.push(xy_rect);
+                        }
+                    }
+                }
+            }
+
+            fn combine_x(source_rect: Rectangle, rect: Rectangle) -> Rectangle {
+                Rectangle {
+                    pos: source_rect.pos,
+                    size: Size {
+                        x: source_rect.size.x + rect.size.x,
+                        y: source_rect.size.y,
+                    },
+                }
+            }
+            fn combine_y(source_rect: Rectangle, rect: Rectangle) -> Rectangle {
+                Rectangle {
+                    pos: source_rect.pos,
+                    size: Size {
+                        x: source_rect.size.x,
+                        y: source_rect.size.y + rect.size.y,
+                    },
+                }
+            }
+        }
+    }
+
+    vec
+}

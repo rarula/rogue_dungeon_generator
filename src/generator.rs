@@ -32,3 +32,15 @@ pub fn generate_2(args: &mut Args) -> Result<Vec2<DividedArea>, GenerationError>
 
     Ok(field)
 }
+
+pub fn generate_3(args: &mut Args) -> Result<Vec<Rectangle>, GenerationError> {
+    let field = builder::create_field(args);
+    let field = match builder::create_paths(args, field) {
+        Ok(v) => v,
+        Err(e) => return Err(e),
+    };
+    let field = builder::extend_paths(args, field);
+    let regions = builder::combine_regions(&field);
+
+    Ok(regions)
+}

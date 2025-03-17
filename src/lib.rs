@@ -2,10 +2,12 @@ pub mod builder;
 pub mod error;
 pub mod generator;
 pub mod utils;
+pub mod visualizer;
 
 #[cfg(test)]
 mod tests {
     use super::generator;
+    use super::visualizer;
     use rand::prelude::*;
 
     fn create_args() -> generator::Args {
@@ -53,6 +55,7 @@ mod tests {
     mod debug_all_steps {
         use super::create_args;
         use super::generator;
+        use super::visualizer;
 
         #[test]
         fn gen_0() {
@@ -90,7 +93,10 @@ mod tests {
             let output = generator::generate_3(&mut args);
 
             match output {
-                Ok(v) => println!("GENERATED:\n{:#?}", v),
+                Ok(v) => {
+                    println!("GENERATED:\n{:#?}", v);
+                    println!("VISUALIZED:\n{}", visualizer::visualizer_3(&args, &v));
+                }
                 Err(e) => println!("ERROR:\n{}", e),
             }
         }

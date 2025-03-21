@@ -2,6 +2,7 @@ use crate::error::GenerationError;
 use crate::generator::Args;
 use crate::utils::*;
 use rand::Rng;
+use rand::seq::IndexedRandom;
 
 pub fn create_field(args: &Args) -> Vec2<Rectangle> {
     let mut vec: Vec2<Rectangle> = Vec::new();
@@ -42,11 +43,14 @@ pub fn create_paths(
 
         let mut create_path =
             |rect: Rectangle, is_horizontal: bool| -> Result<DividedArea, GenerationError> {
+                const PER: f64 = 0.3;
+
                 if is_horizontal {
                     let range = rect.size.y - args.path_size - 1;
 
                     if 0 < range {
-                        let path_offset = args.rng.random_range(0..range);
+                        let diff = (range as f64 * PER).floor() as i32;
+                        let path_offset = args.rng.random_range(0 + diff..range - diff);
                         let path_pos = path_offset + rect.pos.y + 1;
 
                         let path_rect = Rectangle {
@@ -77,7 +81,8 @@ pub fn create_paths(
                     let range = rect.size.x - args.path_size - 1;
 
                     if 0 < range {
-                        let path_offset = args.rng.random_range(0..range);
+                        let diff = (range as f64 * PER).floor() as i32;
+                        let path_offset = args.rng.random_range(0 + diff..range - diff);
                         let path_pos = path_offset + rect.pos.x + 1;
 
                         let path_rect = Rectangle {
@@ -376,4 +381,53 @@ pub fn combine_regions(field: &Vec2<DividedArea>) -> Vec<Rectangle> {
     }
 
     vec
+}
+
+pub fn create_subareas(
+    args: &mut Args,
+    regions: Vec<Rectangle>,
+) -> Result<Vec<Subarea>, GenerationError> {
+    let mut candidates: Vec<Rectangle> = Vec::new();
+
+    for rect in regions {
+        if 0 < rect.size.x - 2 && 0 < rect.size.y - 2 {
+            candidates.push(rect);
+        }
+    }
+    if args.room_count <= candidates.len() as i32 {
+        let mut subareas: Vec<Subarea> = Vec::new();
+
+        for candidate in candidates.choose_multiple(&mut args.rng, args.room_count as usize) {
+            let size = Size {
+                x: args
+                    .rng
+                    .random_range(candidate.size.x / 2..candidate.size.x - 1),
+                y: args
+                    .rng
+                    .random_range(candidate.size.y / 2..candidate.size.y - 1),
+            };
+            let pos = Position {
+                x: candidate.pos.x + 1 + args.rng.random_range(0..candidate.size.x - 1 - size.x),
+                y: candidate.pos.y + 1 + args.rng.random_range(0..candidate.size.y - 1 - size.y),
+            };
+            let room = Room {
+                rect: Rectangle { pos, size },
+                is_horizontal: args.rng.random_bool(0.5),
+            };
+            let subarea = Subarea {
+                rect: candidate.clone(),
+                room,
+            };
+
+            subareas.push(subarea);
+        }
+
+        Ok(subareas)
+    } else {
+        if args.area_count_x * args.area_count_y + 1 < args.room_count {
+            Err(GenerationError::GE0002(args.room_count, candidates.len()))
+        } else {
+            Err(GenerationError::GE0003(args.room_count, candidates.len()))
+        }
+    }
 }

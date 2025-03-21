@@ -12,11 +12,12 @@ mod tests {
 
     fn create_args() -> generator::Args {
         generator::Args {
-            area_size: 4,
-            area_count_x: 2,
-            area_count_y: 2,
-            path_size: 2,
-            rng: StdRng::from_seed([1; 32]),
+            area_size: 10,
+            area_count_x: 4,
+            area_count_y: 4,
+            path_size: 1,
+            room_count: 7,
+            rng: StdRng::from_seed([128; 32]),
         }
     }
 
@@ -99,6 +100,21 @@ mod tests {
                 }
                 Err(e) => println!("ERROR:\n{}", e),
             }
+        }
+
+        #[test]
+        fn gen_4() {
+            let mut args = create_args();
+            let output = generator::generate_4(&mut args);
+
+            match output {
+                Ok((vr, vs)) => {
+                    println!("GENERATED RECTANGLES:\n{:#?}", vr);
+                    println!("GENERATED SUBAREAS:\n{:#?}", vs);
+                    println!("VISUALIZED:\n{}", visualizer::visualizer_4(&args, &vr, &vs))
+                }
+                Err(e) => println!("ERROR:\n{}", e),
+            };
         }
     }
 }

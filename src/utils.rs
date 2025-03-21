@@ -6,10 +6,28 @@ pub struct Position {
     pub y: i32,
 }
 
+impl Clone for Position {
+    fn clone(&self) -> Self {
+        Self {
+            x: self.x,
+            y: self.y,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Size {
     pub x: i32,
     pub y: i32,
+}
+
+impl Clone for Size {
+    fn clone(&self) -> Self {
+        Self {
+            x: self.x,
+            y: self.y,
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -79,6 +97,15 @@ impl Rectangle {
 
     pub fn intersects_y(&self, other: &Self) -> bool {
         self.pos.y < other.pos.y + other.size.y && other.pos.y < self.pos.y + self.size.y
+    }
+}
+
+impl Clone for Rectangle {
+    fn clone(&self) -> Self {
+        Self {
+            pos: self.pos.clone(),
+            size: self.size.clone(),
+        }
     }
 }
 
@@ -178,4 +205,16 @@ pub enum Region {
     RightBottom(Rectangle),
     Top(Rectangle),
     Bottom(Rectangle),
+}
+
+#[derive(Debug)]
+pub struct Subarea {
+    pub rect: Rectangle,
+    pub room: Room,
+}
+
+#[derive(Debug)]
+pub struct Room {
+    pub rect: Rectangle,
+    pub is_horizontal: bool,
 }

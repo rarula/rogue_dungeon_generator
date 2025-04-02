@@ -1,28 +1,30 @@
 use crate::generator::Args;
 use crate::utils::*;
 
-pub fn visualizer_3(args: &Args, regions: &Vec<Rectangle>) -> String {
+pub fn visualizer_3(args: &Args, regions: &Vec<CombinedRegion>) -> String {
     let mut str = String::new();
 
     for y in 0..args.area_size * args.area_count_y {
-        for x in 0..args.area_size * args.area_count_x {
-            let mut found = false;
+        'outer: for x in 0..args.area_size * args.area_count_x {
+            let point = Rectangle {
+                pos: Position {
+                    x,
+                    y,
+                },
+                size: Size {
+                    x: 1,
+                    y: 1,
+                },
+            };
 
             for region in regions {
-                let point = Rectangle {
-                    pos: Position { x, y },
-                    size: Size { x: 1, y: 1 },
-                };
-
-                if region.intersects(&point) {
-                    str.push(' ');
-                    found = true;
+                if region.rect.intersects(&point) {
+                    str.push('.');
+                    continue 'outer;
                 }
             }
 
-            if !found {
-                str.push('#');
-            }
+            str.push('#');
         }
 
         str.push('\n');
@@ -31,14 +33,20 @@ pub fn visualizer_3(args: &Args, regions: &Vec<Rectangle>) -> String {
     str
 }
 
-pub fn visualizer_4(args: &Args, regions: &Vec<Rectangle>, subareas: &Vec<Subarea>) -> String {
+pub fn visualizer_4(args: &Args, regions: &Vec<CombinedRegion>, subareas: &Vec<Subarea>) -> String {
     let mut str = String::new();
 
     for y in 0..args.area_size * args.area_count_y {
         'outer: for x in 0..args.area_size * args.area_count_x {
             let point = Rectangle {
-                pos: Position { x, y },
-                size: Size { x: 1, y: 1 },
+                pos: Position {
+                    x,
+                    y,
+                },
+                size: Size {
+                    x: 1,
+                    y: 1,
+                },
             };
 
             for subarea in subareas {
@@ -48,7 +56,7 @@ pub fn visualizer_4(args: &Args, regions: &Vec<Rectangle>, subareas: &Vec<Subare
                 }
             }
             for region in regions {
-                if region.intersects(&point) {
+                if region.rect.intersects(&point) {
                     str.push(' ');
                     continue 'outer;
                 }

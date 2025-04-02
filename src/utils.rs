@@ -1,6 +1,8 @@
+use std::rc::Rc;
+
 pub type Vec2<T> = Vec<Vec<T>>;
 
-#[derive(Debug)]
+#[derive(Hash, Eq, Debug)]
 pub struct Position {
     pub x: i32,
     pub y: i32,
@@ -15,7 +17,13 @@ impl Clone for Position {
     }
 }
 
-#[derive(Debug)]
+impl PartialEq for Position {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+
+#[derive(Hash, Eq, Debug)]
 pub struct Size {
     pub x: i32,
     pub y: i32,
@@ -30,7 +38,13 @@ impl Clone for Size {
     }
 }
 
-#[derive(Debug)]
+impl PartialEq for Size {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+
+#[derive(Hash, Eq, Debug)]
 pub struct Rectangle {
     pub pos: Position,
     pub size: Size,
@@ -109,6 +123,12 @@ impl Clone for Rectangle {
     }
 }
 
+impl PartialEq for Rectangle {
+    fn eq(&self, other: &Self) -> bool {
+        self.pos == other.pos && self.size == other.size
+    }
+}
+
 #[derive(Debug)]
 pub struct Path {
     pub rect: Rectangle,
@@ -120,6 +140,9 @@ pub struct DividedArea {
     pub rect: Rectangle,
     pub path: Path,
     pub sub_paths: Vec<Path>,
+    pub positioned_nodes: Vec<PositionedNode>,
+    pub horizontal_edges: Vec<Rc<Edge>>,
+    pub vertical_edges: Vec<Rc<Edge>>,
 }
 
 impl DividedArea {
@@ -207,6 +230,13 @@ pub enum Region {
     Bottom(Rectangle),
 }
 
+#[derive(Clone, Debug)]
+pub struct CombinedRegion {
+    pub rect: Rectangle,
+    pub side_edges_x: Vec<Rc<Edge>>,
+    pub side_edges_y: Vec<Rc<Edge>>,
+}
+
 #[derive(Debug)]
 pub struct Subarea {
     pub rect: Rectangle,
@@ -217,4 +247,86 @@ pub struct Subarea {
 pub struct Room {
     pub rect: Rectangle,
     pub is_horizontal: bool,
+}
+
+#[derive(Debug)]
+pub struct Node {
+    pub rect: Rectangle,
+}
+
+#[derive(Clone, Debug)]
+pub struct Edge {
+    pub a: Rc<Node>,
+    pub b: Rc<Node>,
+}
+
+impl Edge {
+    pub fn to_rect(&self) -> Rectangle {
+        let mut a = &self.a.rect;
+        let mut b = &self.b.rect;
+
+        if a.pos.x < b.pos.x || b.pos.x < a.pos.x {
+            if b.pos.x < a.pos.x {
+                (a, b) = (&self.b.rect, &self.a.rect);
+            }
+            Rectangle {
+                pos: Position {
+                    x: a.pos.x + a.size.x,
+                    y: a.pos.y,
+                },
+                size: Size {
+                    x: b.pos.x - (a.pos.x + a.size.x),
+                    y: a.size.y,
+                },
+            }
+        } else if a.pos.y < b.pos.y || b.pos.y < a.pos.y {
+            if b.pos.x < a.pos.x {
+                (a, b) = (&self.b.rect, &self.a.rect);
+            }
+            Rectangle {
+                pos: Position {
+                    x: a.pos.x,
+                    y: a.pos.y + a.size.y,
+                },
+                size: Size {
+                    x: a.size.x,
+                    y: b.pos.y - (a.pos.y + a.size.y),
+                },
+            }
+        } else {
+            Rectangle {
+                pos: Position {
+                    x: 0,
+                    y: 0,
+                },
+                size: Size {
+                    x: 0,
+                    y: 0,
+                },
+            }
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct PositionedNode {
+    pub node: Rc<Node>,
+    pub loc: Location,
+}
+
+#[derive(PartialEq, Debug)]
+pub enum Location {
+    Left,
+    Right,
+    Top,
+    Bottom,
+    LeftRight,
+    TopBottom,
+    Border,
+}
+
+impl Location {
+    pub fn is_border(&self) -> bool {
+        if let Location::Border = self { true } else { false }
+    }
 }

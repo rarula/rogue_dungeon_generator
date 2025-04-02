@@ -25,35 +25,41 @@ pub fn generate_1(args: &mut Args) -> Result<Vec2<DividedArea>, GenerationError>
 
 pub fn generate_2(args: &mut Args) -> Result<Vec2<DividedArea>, GenerationError> {
     let field = builder::create_field(args);
-    let field = match builder::create_paths(args, field) {
+    let mut field = match builder::create_paths(args, field) {
         Ok(v) => v,
         Err(e) => return Err(e),
     };
-    let field = builder::extend_paths(args, field);
+    builder::extend_paths(args, &mut field);
+    builder::create_nodes(args, &mut field);
+    builder::create_edges(args, &mut field);
 
     Ok(field)
 }
 
-pub fn generate_3(args: &mut Args) -> Result<Vec<Rectangle>, GenerationError> {
+pub fn generate_3(args: &mut Args) -> Result<Vec<CombinedRegion>, GenerationError> {
     let field = builder::create_field(args);
-    let field = match builder::create_paths(args, field) {
+    let mut field = match builder::create_paths(args, field) {
         Ok(v) => v,
         Err(e) => return Err(e),
     };
-    let field = builder::extend_paths(args, field);
-    let regions = builder::combine_regions(&field);
+    builder::extend_paths(args, &mut field);
+    builder::create_nodes(args, &mut field);
+    builder::create_edges(args, &mut field);
+    let regions = builder::combine_regions(args, &field);
 
     Ok(regions)
 }
 
-pub fn generate_4(args: &mut Args) -> Result<(Vec<Rectangle>, Vec<Subarea>), GenerationError> {
+pub fn generate_4(args: &mut Args) -> Result<(Vec<CombinedRegion>, Vec<Subarea>), GenerationError> {
     let field = builder::create_field(args);
-    let field = match builder::create_paths(args, field) {
+    let mut field = match builder::create_paths(args, field) {
         Ok(v) => v,
         Err(e) => return Err(e),
     };
-    let field = builder::extend_paths(args, field);
-    let regions = builder::combine_regions(&field);
+    builder::extend_paths(args, &mut field);
+    builder::create_nodes(args, &mut field);
+    builder::create_edges(args, &mut field);
+    let regions = builder::combine_regions(args, &field);
     let subareas = match builder::create_subareas(args, regions.clone()) {
         Ok(v) => v,
         Err(e) => return Err(e),

@@ -32,15 +32,11 @@ impl GenerationError {
 
     pub fn cause(&self) -> String {
         match self {
-            Self::GE0001 => String::from(
-                "'area_size' の値に対して 'path_size' の値が大きすぎるか、'path_size' の値に対して 'area_size' の値が小さすぎます。",
-            ),
-            Self::GE0002(_, _) => String::from(
-                "生成する部屋の数がエリアの総数に対して多すぎるため、期待された数の部屋を生成することができません。",
-            ),
-            Self::GE0003(_, _) => String::from(
-                "生成されたサブエリアのサイズが小さすぎるため、最小サイズの部屋ですら期待された数だけ生成することができません。",
-            ),
+            Self::GE0001 => String::from("'area_size' の値に対して 'path_size' の値が大きすぎるか、'path_size' の値に対して 'area_size' の値が小さすぎます。"),
+            Self::GE0002(_, _) => String::from("生成する部屋の数がエリアの総数に対して多すぎるため、期待された数の部屋を生成することができません。"),
+            Self::GE0003(_, _) => {
+                String::from("生成されたサブエリアのサイズが小さすぎるため、最小サイズの部屋ですら期待された数だけ生成することができません。")
+            }
         }
     }
 }

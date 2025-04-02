@@ -12,11 +12,11 @@ mod tests {
 
     fn create_args() -> generator::Args {
         generator::Args {
-            area_size: 10,
+            area_size: 12,
             area_count_x: 4,
             area_count_y: 4,
             path_size: 1,
-            room_count: 7,
+            room_count: 6,
             rng: StdRng::from_seed([128; 32]),
         }
     }

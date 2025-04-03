@@ -3,8 +3,8 @@ use std::fmt;
 #[derive(Debug)]
 pub enum GenerationError {
     GE0001,
-    GE0002(i32, usize),
-    GE0003(i32, usize),
+    GE0002(usize, usize),
+    GE0003(usize, usize),
 }
 
 impl GenerationError {

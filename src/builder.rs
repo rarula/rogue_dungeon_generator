@@ -13,8 +13,8 @@ pub fn create_field(args: &Args) -> Vec2<Rectangle> {
 
         for x in 0..args.area_count_x {
             let pos = Position {
-                x: args.area_size * x,
-                y: args.area_size * y,
+                x: args.area_size * x as i32,
+                y: args.area_size * y as i32,
             };
             let size = Size {
                 x: args.area_size,
@@ -136,12 +136,12 @@ pub fn create_paths(args: &mut Args, field: Vec2<Rectangle>) -> Result<Vec2<Divi
 }
 
 pub fn extend_paths(args: &Args, field: &mut Vec2<DividedArea>) {
-    for y in 0..args.area_count_y as usize {
+    for y in 0..args.area_count_y {
         let (y_before, y_middle) = field.split_at_mut(y);
         let (y_current, y_after) = y_middle.split_at_mut(1);
         let y_current = &mut y_current[0];
 
-        for x in 0..args.area_count_x as usize {
+        for x in 0..args.area_count_x {
             let (x_before, x_middle) = y_current.split_at_mut(x);
             let (x_current, x_after) = x_middle.split_at_mut(1);
             let x_current = &mut x_current[0];
@@ -172,7 +172,7 @@ pub fn extend_paths(args: &Args, field: &mut Vec2<DividedArea>) {
                     }
                 }
                 // Extend the path to the right
-                if x < args.area_count_x as usize - 1 {
+                if x < args.area_count_x - 1 {
                     if let Some(right) = x_after.first_mut() {
                         let rect = {
                             let pos = right.rect.pos.x;
@@ -222,7 +222,7 @@ pub fn extend_paths(args: &Args, field: &mut Vec2<DividedArea>) {
                     }
                 }
                 // Extend the path to the bottom
-                if y < args.area_count_y as usize - 1 {
+                if y < args.area_count_y - 1 {
                     if let Some(bottom) = y_after.first_mut() {
                         let bottom = &mut bottom[x];
                         let rect = {
@@ -253,12 +253,12 @@ pub fn extend_paths(args: &Args, field: &mut Vec2<DividedArea>) {
 
 pub fn create_nodes(args: &Args, field: &mut Vec2<DividedArea>) {
     // TODO: split_at_mutを使用しない形にリファクタリングしてもよい（未使用の変数があるため）
-    for y in 0..args.area_count_y as usize {
+    for y in 0..args.area_count_y {
         let (_y_before, y_middle) = field.split_at_mut(y);
         let (y_current, _y_after) = y_middle.split_at_mut(1);
         let y_current = &mut y_current[0];
 
-        for x in 0..args.area_count_x as usize {
+        for x in 0..args.area_count_x {
             let (_x_before, x_middle) = y_current.split_at_mut(x);
             let (x_current, _x_after) = x_middle.split_at_mut(1);
             let x_current = &mut x_current[0];
@@ -288,7 +288,7 @@ pub fn create_nodes(args: &Args, field: &mut Vec2<DividedArea>) {
                         x_current.positioned_nodes.push(node);
                     }
                     // Create a border node on the right
-                    if x == args.area_count_x as usize - 1 {
+                    if x == args.area_count_x - 1 {
                         let rect = Rectangle {
                             pos: Position {
                                 x: x_current.path.rect.pos.x + x_current.path.rect.size.x,
@@ -331,7 +331,7 @@ pub fn create_nodes(args: &Args, field: &mut Vec2<DividedArea>) {
                         x_current.positioned_nodes.push(node);
                     }
                     // Create a border node on the bottom
-                    if y == args.area_count_y as usize - 1 {
+                    if y == args.area_count_y - 1 {
                         let rect = Rectangle {
                             pos: Position {
                                 x: x_current.path.rect.pos.x,
@@ -500,13 +500,12 @@ pub fn create_nodes(args: &Args, field: &mut Vec2<DividedArea>) {
 }
 
 pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
-    // TODO: args.area_count_?の数値の型をunsignedな値のみ許容するものに変更(usizeが妥当?)
-    for y in 0..args.area_count_y as usize {
+    for y in 0..args.area_count_y {
         let (y_before, y_middle) = field.split_at_mut(y);
         let (y_current, y_after) = y_middle.split_at_mut(1);
         let y_current = &mut y_current[0];
 
-        for x in 0..args.area_count_x as usize {
+        for x in 0..args.area_count_x {
             let (x_before, x_middle) = y_current.split_at_mut(x);
             let (x_current, x_after) = x_middle.split_at_mut(1);
             let x_current = &mut x_current[0];
@@ -527,7 +526,7 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                             }
                         }
                         // Create an edge on the right
-                        if x == args.area_count_x as usize - 1 {
+                        if x == args.area_count_x - 1 {
                             if let Some(b) = nearest_x_without_border(&x_current.positioned_nodes, false) {
                                 let a = nearest_x(&x_current.positioned_nodes, false);
 
@@ -550,7 +549,7 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                             }
                         }
                         // Create an edge on the bottom
-                        if y == args.area_count_y as usize - 1 {
+                        if y == args.area_count_y - 1 {
                             if let Some(b) = nearest_y_without_border(&x_current.positioned_nodes, false) {
                                 let a = nearest_y(&x_current.positioned_nodes, false);
 
@@ -613,7 +612,7 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                             }
                         }
                         // Create the edge to the right
-                        if x < args.area_count_x as usize - 1 {
+                        if x < args.area_count_x - 1 {
                             if let Some(right) = x_after.first_mut() {
                                 for a in &right.positioned_nodes {
                                     if let Location::Left | Location::LeftRight = a.loc {
@@ -653,7 +652,7 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                             }
                         }
                         // Create the edge to the bottom
-                        if y < args.area_count_y as usize - 1 {
+                        if y < args.area_count_y - 1 {
                             if let Some(bottom) = y_after.first_mut() {
                                 let bottom = &mut bottom[x];
                                 for a in &bottom.positioned_nodes {
@@ -741,7 +740,7 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                 }
             } else {
                 if x_current.path.is_horizontal {
-                    if 0 < x && x < args.area_count_x as usize - 1 {
+                    if 0 < x && x < args.area_count_x - 1 {
                         if let (Some(left), Some(right)) = (x_before.last_mut(), x_after.first_mut()) {
                             let a = 'a: {
                                 for node in &left.positioned_nodes {
@@ -776,7 +775,7 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                         }
                     }
                 } else {
-                    if 0 < y && y < args.area_count_y as usize - 1 {
+                    if 0 < y && y < args.area_count_y - 1 {
                         if let (Some(top), Some(bottom)) = (y_before.last_mut(), y_after.first_mut()) {
                             let top = &mut top[x];
                             let bottom = &mut bottom[x];
@@ -822,14 +821,14 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
 pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRegion> {
     let mut vec: Vec<CombinedRegion> = Vec::new();
 
-    for y in 0..args.area_count_y as usize {
-        for x in 0..args.area_count_x as usize {
+    for y in 0..args.area_count_y {
+        for x in 0..args.area_count_x {
             if y == 0 {
                 match field[y][x].region(Quadrant::RightTop) {
                     Region::Top(sr) => {
                         if x == 0 {
                             let side_edges_x = get_side_edges_x(&field[y][x], &sr);
-                            if x < args.area_count_x as usize - 1 {
+                            if x < args.area_count_x - 1 {
                                 if let Region::LeftTop(r) = field[y][x + 1].region(Quadrant::LeftTop) {
                                     let side_edges_y = get_side_edges_y(&field[y][x + 1], &r);
                                     let region = CombinedRegion {
@@ -850,11 +849,11 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                         }
                     }
                     Region::RightTop(sr) => {
-                        if x < args.area_count_x as usize - 1 {
+                        if x < args.area_count_x - 1 {
                             if let Region::Top(r) = field[y][x + 1].region(Quadrant::LeftTop) {
                                 let side_edges_y = get_side_edges_y(&field[y][x], &sr);
                                 let side_edges_x = get_side_edges_x(&field[y][x + 1], &r);
-                                if x < args.area_count_x as usize - 2 {
+                                if x < args.area_count_x - 2 {
                                     let sr = combine_x(sr, r);
                                     if let Region::LeftTop(r) = field[y][x + 2].region(Quadrant::LeftTop) {
                                         let edges_y = get_side_edges_y(&field[y][x + 2], &r);
@@ -879,12 +878,12 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                     _ => (),
                 }
             }
-            if y == args.area_count_y as usize - 1 {
+            if y == args.area_count_y - 1 {
                 match field[y][x].region(Quadrant::RightBottom) {
                     Region::Bottom(sr) => {
                         if x == 0 {
                             let side_edges_x = get_side_edges_x(&field[y][x], &sr);
-                            if x < args.area_count_x as usize - 1 {
+                            if x < args.area_count_x - 1 {
                                 if let Region::LeftBottom(r) = field[y][x + 1].region(Quadrant::LeftBottom) {
                                     let side_edges_y = get_side_edges_y(&field[y][x + 1], &r);
                                     let region = CombinedRegion {
@@ -905,11 +904,11 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                         }
                     }
                     Region::RightBottom(sr) => {
-                        if x < args.area_count_x as usize - 1 {
+                        if x < args.area_count_x - 1 {
                             if let Region::Bottom(r) = field[y][x + 1].region(Quadrant::LeftBottom) {
                                 let side_edges_y = get_side_edges_y(&field[y][x], &sr);
                                 let side_edges_x = get_side_edges_x(&field[y][x + 1], &r);
-                                if x < args.area_count_x as usize - 2 {
+                                if x < args.area_count_x - 2 {
                                     let sr = combine_x(sr, r);
                                     if let Region::LeftBottom(r) = field[y][x + 2].region(Quadrant::LeftBottom) {
                                         let edges_y = get_side_edges_y(&field[y][x + 2], &r);
@@ -939,7 +938,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                     Region::Left(sr) => {
                         if y == 0 {
                             let side_edges_y = get_side_edges_y(&field[y][x], &sr);
-                            if y < args.area_count_y as usize - 1 {
+                            if y < args.area_count_y - 1 {
                                 if let Region::LeftTop(r) = field[y + 1][x].region(Quadrant::LeftTop) {
                                     let side_edges_x = get_side_edges_x(&field[y + 1][x], &r);
                                     let region = CombinedRegion {
@@ -960,11 +959,11 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                         }
                     }
                     Region::LeftBottom(sr) => {
-                        if y < args.area_count_y as usize - 1 {
+                        if y < args.area_count_y - 1 {
                             if let Region::Left(r) = field[y + 1][x].region(Quadrant::LeftTop) {
                                 let side_edges_x = get_side_edges_x(&field[y][x], &sr);
                                 let side_edges_y = get_side_edges_y(&field[y + 1][x], &r);
-                                if y < args.area_count_y as usize - 2 {
+                                if y < args.area_count_y - 2 {
                                     let sr = combine_y(sr, r);
                                     if let Region::LeftTop(r) = field[y + 2][x].region(Quadrant::LeftTop) {
                                         let edges_x = get_side_edges_x(&field[y + 2][x], &r);
@@ -989,12 +988,12 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                     _ => (),
                 }
             }
-            if x == args.area_count_x as usize - 1 {
+            if x == args.area_count_x - 1 {
                 match field[y][x].region(Quadrant::RightBottom) {
                     Region::Right(sr) => {
                         if y == 0 {
                             let side_edges_y = get_side_edges_y(&field[y][x], &sr);
-                            if y < args.area_count_y as usize - 1 {
+                            if y < args.area_count_y - 1 {
                                 if let Region::RightTop(r) = field[y + 1][x].region(Quadrant::RightTop) {
                                     let side_edges_x = get_side_edges_x(&field[y + 1][x], &r);
                                     let region = CombinedRegion {
@@ -1015,11 +1014,11 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                         }
                     }
                     Region::RightBottom(sr) => {
-                        if y < args.area_count_y as usize - 1 {
+                        if y < args.area_count_y - 1 {
                             if let Region::Right(r) = field[y + 1][x].region(Quadrant::RightTop) {
                                 let side_edges_x = get_side_edges_x(&field[y][x], &sr);
                                 let side_edges_y = get_side_edges_y(&field[y + 1][x], &r);
-                                if y < args.area_count_y as usize - 2 {
+                                if y < args.area_count_y - 2 {
                                     let sr = combine_y(sr, r);
                                     if let Region::RightTop(r) = field[y + 2][x].region(Quadrant::RightTop) {
                                         let edges_x = get_side_edges_x(&field[y + 2][x], &r);
@@ -1044,7 +1043,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                     _ => (),
                 }
             }
-            if y < args.area_count_y as usize - 1 && x < args.area_count_x as usize - 1 {
+            if y < args.area_count_y - 1 && x < args.area_count_x - 1 {
                 if let Region::RightBottom(sr) = field[y][x].region(Quadrant::RightBottom) {
                     if let Region::LeftBottom(r0) = field[y][x + 1].region(Quadrant::LeftBottom) {
                         if let Region::RightTop(r1) = field[y + 1][x].region(Quadrant::RightTop) {
@@ -1132,10 +1131,10 @@ pub fn create_subareas(args: &mut Args, regions: Vec<CombinedRegion>) -> Result<
             candidates.push(region);
         }
     }
-    if args.room_count <= candidates.len() as i32 {
+    if args.room_count <= candidates.len() {
         let mut subareas: Vec<Subarea> = Vec::new();
 
-        for candidate in candidates.choose_multiple(&mut args.rng, args.room_count as usize) {
+        for candidate in candidates.choose_multiple(&mut args.rng, args.room_count) {
             let size = Size {
                 x: args.rng.random_range(candidate.rect.size.x / 2..candidate.rect.size.x - 1),
                 y: args.rng.random_range(candidate.rect.size.y / 2..candidate.rect.size.y - 1),

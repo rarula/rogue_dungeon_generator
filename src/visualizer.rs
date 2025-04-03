@@ -4,8 +4,8 @@ use crate::utils::*;
 pub fn visualizer_3(args: &Args, regions: &Vec<CombinedRegion>) -> String {
     let mut str = String::new();
 
-    for y in 0..args.area_size * args.area_count_y {
-        'outer: for x in 0..args.area_size * args.area_count_x {
+    for y in 0..args.area_size * args.area_count_y as i32 {
+        'outer: for x in 0..args.area_size * args.area_count_x as i32 {
             let point = Rectangle {
                 pos: Position {
                     x,
@@ -36,8 +36,8 @@ pub fn visualizer_3(args: &Args, regions: &Vec<CombinedRegion>) -> String {
 pub fn visualizer_4(args: &Args, regions: &Vec<CombinedRegion>, subareas: &Vec<Subarea>) -> String {
     let mut str = String::new();
 
-    for y in 0..args.area_size * args.area_count_y {
-        'outer: for x in 0..args.area_size * args.area_count_x {
+    for y in 0..args.area_size * args.area_count_y as i32 {
+        'outer: for x in 0..args.area_size * args.area_count_x as i32 {
             let point = Rectangle {
                 pos: Position {
                     x,

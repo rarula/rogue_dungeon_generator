@@ -5,10 +5,10 @@ use rand::prelude::*;
 
 pub struct Args {
     pub area_size: i32,
-    pub area_count_x: i32,
-    pub area_count_y: i32,
+    pub area_count_x: usize,
+    pub area_count_y: usize,
     pub path_size: i32,
-    pub room_count: i32,
+    pub room_count: usize,
     pub rng: StdRng,
 }
 

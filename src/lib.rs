@@ -108,10 +108,9 @@ mod tests {
             let output = generator::generate_4(&mut args);
 
             match output {
-                Ok((vr, vs)) => {
-                    println!("GENERATED RECTANGLES:\n{:#?}", vr);
-                    println!("GENERATED SUBAREAS:\n{:#?}", vs);
-                    println!("VISUALIZED:\n{}", visualizer::visualizer_4(&args, &vr, &vs))
+                Ok(v) => {
+                    println!("GENERATED:\n{:#?}", v);
+                    println!("VISUALIZED:\n{}", visualizer::visualizer_4(&args, &v))
                 }
                 Err(e) => println!("ERROR:\n{}", e),
             };

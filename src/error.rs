@@ -19,14 +19,8 @@ impl GenerationError {
     pub fn description(&self) -> String {
         match self {
             Self::GE0001 => String::from("エリア内に通路を生成できる場所が存在しません。"),
-            Self::GE0002(expected, received) => format!(
-                "{}個の部屋が生成できることを期待しましたが、実際に生成できるのは{}個までです。",
-                expected, received
-            ),
-            Self::GE0003(expected, received) => format!(
-                "{}個の部屋が生成できることを期待しましたが、実際に生成できるのは{}個までです。",
-                expected, received
-            ),
+            Self::GE0002(expected, received) => format!("{expected}個の部屋が生成できることを期待しましたが、実際に生成できるのは{received}個までです。"),
+            Self::GE0003(expected, received) => format!("{expected}個の部屋が生成できることを期待しましたが、実際に生成できるのは{received}個までです。"),
         }
     }
 
@@ -35,7 +29,7 @@ impl GenerationError {
             Self::GE0001 => String::from("'area_size' の値に対して 'path_size' の値が大きすぎるか、'path_size' の値に対して 'area_size' の値が小さすぎます。"),
             Self::GE0002(_, _) => String::from("生成する部屋の数がエリアの総数に対して多すぎるため、期待された数の部屋を生成することができません。"),
             Self::GE0003(_, _) => {
-                String::from("生成されたサブエリアのサイズが小さすぎるため、最小サイズの部屋ですら期待された数だけ生成することができません。")
+                String::from("生成されたCombinedRegionのサイズが小さすぎるため、最小サイズの部屋ですら期待された数だけ生成することができません。")
             }
         }
     }
@@ -43,12 +37,9 @@ impl GenerationError {
 
 impl fmt::Display for GenerationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "error_code: {},\ndescription: {},\ncause: {}",
-            self.error_code(),
-            self.description(),
-            self.cause(),
-        )
+        let error_code = self.error_code();
+        let description = self.description();
+        let cause = self.cause();
+        write!(f, "error_code: {error_code},\ndescription: {description},\ncause: {cause}")
     }
 }

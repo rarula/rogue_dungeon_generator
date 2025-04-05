@@ -50,7 +50,7 @@ pub fn generate_3(args: &mut Args) -> Result<Vec<CombinedRegion>, GenerationErro
     Ok(regions)
 }
 
-pub fn generate_4(args: &mut Args) -> Result<(Vec<CombinedRegion>, Vec<Subarea>), GenerationError> {
+pub fn generate_4(args: &mut Args) -> Result<Vec<CombinedRegion>, GenerationError> {
     let field = builder::create_field(args);
     let mut field = match builder::create_paths(args, field) {
         Ok(v) => v,
@@ -59,11 +59,11 @@ pub fn generate_4(args: &mut Args) -> Result<(Vec<CombinedRegion>, Vec<Subarea>)
     builder::extend_paths(args, &mut field);
     builder::create_nodes(args, &mut field);
     builder::create_edges(args, &mut field);
-    let regions = builder::combine_regions(args, &field);
-    let subareas = match builder::create_subareas(args, regions.clone()) {
-        Ok(v) => v,
+    let mut regions = builder::combine_regions(args, &field);
+    match builder::create_rooms(args, &mut regions) {
+        Ok(_) => (),
         Err(e) => return Err(e),
     };
 
-    Ok((regions, subareas))
+    Ok(regions)
 }

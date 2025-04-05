@@ -16,7 +16,6 @@ pub fn visualizer_3(args: &Args, regions: &Vec<CombinedRegion>) -> String {
                     y: 1,
                 },
             };
-
             for region in regions {
                 if region.rect.intersects(&point) {
                     str.push('.');
@@ -33,7 +32,7 @@ pub fn visualizer_3(args: &Args, regions: &Vec<CombinedRegion>) -> String {
     str
 }
 
-pub fn visualizer_4(args: &Args, regions: &Vec<CombinedRegion>, subareas: &Vec<Subarea>) -> String {
+pub fn visualizer_4(args: &Args, regions: &Vec<CombinedRegion>) -> String {
     let mut str = String::new();
 
     for y in 0..args.area_size * args.area_count_y as i32 {
@@ -48,14 +47,13 @@ pub fn visualizer_4(args: &Args, regions: &Vec<CombinedRegion>, subareas: &Vec<S
                     y: 1,
                 },
             };
-
-            for subarea in subareas {
-                if subarea.room.rect.intersects(&point) {
-                    str.push('.');
-                    continue 'outer;
-                }
-            }
             for region in regions {
+                if let Some(room) = &region.room {
+                    if room.rect.intersects(&point) {
+                        str.push('.');
+                        continue 'outer;
+                    }
+                }
                 if region.rect.intersects(&point) {
                     str.push(' ');
                     continue 'outer;

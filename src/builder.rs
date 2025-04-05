@@ -2,7 +2,7 @@ use crate::error::GenerationError;
 use crate::generator::Args;
 use crate::utils::*;
 use rand::Rng;
-use rand::seq::IndexedRandom;
+use rand::seq::IteratorRandom;
 use std::rc::Rc;
 
 pub fn create_field(args: &Args) -> Vec2<Rectangle> {
@@ -835,6 +835,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: combine_x(sr, r),
                                         side_edges_x,
                                         side_edges_y,
+                                        room: None,
                                     };
                                     vec.push(region);
                                 }
@@ -843,6 +844,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                     rect: sr,
                                     side_edges_x,
                                     side_edges_y: Vec::new(),
+                                    room: None,
                                 };
                                 vec.push(region);
                             }
@@ -861,6 +863,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                             rect: combine_x(sr, r),
                                             side_edges_x,
                                             side_edges_y: [side_edges_y, edges_y].concat(),
+                                            room: None,
                                         };
                                         vec.push(region);
                                     }
@@ -869,6 +872,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: combine_x(sr, r),
                                         side_edges_x,
                                         side_edges_y,
+                                        room: None,
                                     };
                                     vec.push(region);
                                 }
@@ -890,6 +894,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: combine_x(sr, r),
                                         side_edges_x,
                                         side_edges_y,
+                                        room: None,
                                     };
                                     vec.push(region);
                                 }
@@ -898,6 +903,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                     rect: sr,
                                     side_edges_x,
                                     side_edges_y: Vec::new(),
+                                    room: None,
                                 };
                                 vec.push(region);
                             }
@@ -916,6 +922,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                             rect: combine_x(sr, r),
                                             side_edges_x,
                                             side_edges_y: [side_edges_y, edges_y].concat(),
+                                            room: None,
                                         };
                                         vec.push(region);
                                     }
@@ -924,6 +931,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: combine_x(sr, r),
                                         side_edges_x,
                                         side_edges_y,
+                                        room: None,
                                     };
                                     vec.push(region);
                                 }
@@ -945,6 +953,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: combine_y(sr, r),
                                         side_edges_x,
                                         side_edges_y,
+                                        room: None,
                                     };
                                     vec.push(region);
                                 }
@@ -953,6 +962,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                     rect: sr,
                                     side_edges_x: Vec::new(),
                                     side_edges_y,
+                                    room: None,
                                 };
                                 vec.push(region);
                             }
@@ -971,6 +981,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                             rect: combine_y(sr, r),
                                             side_edges_x: [side_edges_x, edges_x].concat(),
                                             side_edges_y,
+                                            room: None,
                                         };
                                         vec.push(region);
                                     }
@@ -979,6 +990,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: combine_y(sr, r),
                                         side_edges_x,
                                         side_edges_y,
+                                        room: None,
                                     };
                                     vec.push(region);
                                 }
@@ -1000,6 +1012,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: combine_y(sr, r),
                                         side_edges_x,
                                         side_edges_y,
+                                        room: None,
                                     };
                                     vec.push(region);
                                 }
@@ -1008,6 +1021,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                     rect: sr,
                                     side_edges_x: Vec::new(),
                                     side_edges_y,
+                                    room: None,
                                 };
                                 vec.push(region);
                             }
@@ -1026,6 +1040,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                             rect: combine_y(sr, r),
                                             side_edges_x: [side_edges_x, edges_x].concat(),
                                             side_edges_y,
+                                            room: None,
                                         };
                                         vec.push(region);
                                     }
@@ -1034,6 +1049,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: combine_y(sr, r),
                                         side_edges_x,
                                         side_edges_y,
+                                        room: None,
                                     };
                                     vec.push(region);
                                 }
@@ -1061,6 +1077,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: xy_rect,
                                         side_edges_x: [edges_x0, edges_x1].concat(),
                                         side_edges_y: [edges_y0, edges_y1].concat(),
+                                        room: None,
                                     };
                                     vec.push(region);
                                 } else {
@@ -1076,6 +1093,7 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                                         rect: xy_rect,
                                         side_edges_x: [edges_x0, edges_x1].concat(),
                                         side_edges_y: [edges_y0, edges_y1].concat(),
+                                        room: None,
                                     };
                                     vec.push(region);
                                 }
@@ -1123,18 +1141,14 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
     vec
 }
 
-pub fn create_subareas(args: &mut Args, regions: Vec<CombinedRegion>) -> Result<Vec<Subarea>, GenerationError> {
-    let mut candidates: Vec<CombinedRegion> = Vec::new();
+pub fn create_rooms(args: &mut Args, regions: &mut Vec<CombinedRegion>) -> Result<(), GenerationError> {
+    let candidates = regions
+        .iter_mut()
+        .filter(|region| 2 < region.rect.size.x && 2 < region.rect.size.y)
+        .choose_multiple(&mut args.rng, args.room_count);
 
-    for region in regions {
-        if 0 < region.rect.size.x - 2 && 0 < region.rect.size.y - 2 {
-            candidates.push(region);
-        }
-    }
     if args.room_count <= candidates.len() {
-        let mut subareas: Vec<Subarea> = Vec::new();
-
-        for candidate in candidates.choose_multiple(&mut args.rng, args.room_count) {
+        for candidate in candidates {
             let size = Size {
                 x: args.rng.random_range(candidate.rect.size.x / 2..candidate.rect.size.x - 1),
                 y: args.rng.random_range(candidate.rect.size.y / 2..candidate.rect.size.y - 1),
@@ -1150,15 +1164,9 @@ pub fn create_subareas(args: &mut Args, regions: Vec<CombinedRegion>) -> Result<
                 },
                 is_horizontal: args.rng.random_bool(0.5),
             };
-            let subarea = Subarea {
-                rect: candidate.rect.clone(),
-                room,
-            };
-
-            subareas.push(subarea);
+            candidate.room = Some(room);
         }
-
-        Ok(subareas)
+        Ok(())
     } else {
         if args.area_count_x * args.area_count_y + 1 < args.room_count {
             Err(GenerationError::GE0002(args.room_count, candidates.len()))

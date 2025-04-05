@@ -235,6 +235,7 @@ pub struct CombinedRegion {
     pub rect: Rectangle,
     pub side_edges_x: Vec<Rc<Edge>>,
     pub side_edges_y: Vec<Rc<Edge>>,
+    pub room: Option<Room>,
 }
 
 #[derive(Debug)]
@@ -243,7 +244,7 @@ pub struct Subarea {
     pub room: Room,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Room {
     pub rect: Rectangle,
     pub is_horizontal: bool,

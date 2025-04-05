@@ -12,12 +12,12 @@ mod tests {
 
     fn create_args() -> generator::Args {
         generator::Args {
-            area_size: 12,
-            area_count_x: 4,
-            area_count_y: 4,
-            path_size: 1,
-            room_count: 6,
-            rng: StdRng::from_seed([128; 32]),
+            area_size: 15,
+            area_count_x: 5,
+            area_count_y: 5,
+            path_size: 2,
+            room_count: 10,
+            rng: StdRng::from_seed([0; 32]),
         }
     }
 
@@ -111,6 +111,21 @@ mod tests {
                 Ok(v) => {
                     println!("GENERATED:\n{:#?}", v);
                     println!("VISUALIZED:\n{}", visualizer::visualizer_4(&args, &v))
+                }
+                Err(e) => println!("ERROR:\n{}", e),
+            };
+        }
+
+        #[test]
+        fn gen_5() {
+            let mut args = create_args();
+            let output = generator::generate_5(&mut args);
+
+            match output {
+                Ok((v0, v1)) => {
+                    // println!("GENERATED AREAS:\n{:#?}", v0);
+                    // println!("GENERATED REGIONS:\n{:#?}", v1);
+                    println!("VISUALIZED:\n{}", visualizer::visualizer_5(&args, &v0, &v1))
                 }
                 Err(e) => println!("ERROR:\n{}", e),
             };

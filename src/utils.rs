@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{cell::RefCell, rc::Rc};
 
 pub type Vec2<T> = Vec<Vec<T>>;
 
@@ -141,8 +141,8 @@ pub struct DividedArea {
     pub path: Path,
     pub sub_paths: Vec<Path>,
     pub positioned_nodes: Vec<PositionedNode>,
-    pub horizontal_edges: Vec<Rc<Edge>>,
-    pub vertical_edges: Vec<Rc<Edge>>,
+    pub horizontal_edges: Vec<Rc<RefCell<Edge>>>,
+    pub vertical_edges: Vec<Rc<RefCell<Edge>>>,
 }
 
 impl DividedArea {
@@ -233,8 +233,8 @@ pub enum Region {
 #[derive(Clone, Debug)]
 pub struct CombinedRegion {
     pub rect: Rectangle,
-    pub side_edges_x: Vec<Rc<Edge>>,
-    pub side_edges_y: Vec<Rc<Edge>>,
+    pub side_edges_x: Vec<Rc<RefCell<Edge>>>,
+    pub side_edges_y: Vec<Rc<RefCell<Edge>>>,
     pub room: Option<Room>,
 }
 
@@ -250,15 +250,17 @@ pub struct Room {
     pub is_horizontal: bool,
 }
 
-#[derive(Debug)]
+#[derive(Hash, PartialEq, Eq, Debug)]
 pub struct Node {
     pub rect: Rectangle,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Hash, PartialEq, Eq, Debug)]
 pub struct Edge {
     pub a: Rc<Node>,
     pub b: Rc<Node>,
+    pub is_protected: bool,
+    pub is_enabled: bool,
 }
 
 impl Edge {
@@ -281,7 +283,7 @@ impl Edge {
                 },
             }
         } else if a.pos.y < b.pos.y || b.pos.y < a.pos.y {
-            if b.pos.x < a.pos.x {
+            if b.pos.y < a.pos.y {
                 (a, b) = (&self.b.rect, &self.a.rect);
             }
             Rectangle {

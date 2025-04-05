@@ -3,6 +3,7 @@ use crate::generator::Args;
 use crate::utils::*;
 use rand::Rng;
 use rand::seq::IteratorRandom;
+use std::cell::RefCell;
 use std::rc::Rc;
 
 pub fn create_field(args: &Args) -> Vec2<Rectangle> {
@@ -518,22 +519,16 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                         if x == 0 {
                             if let Some(b) = nearest_x_without_border(&x_current.positioned_nodes, true) {
                                 let a = nearest_x(&x_current.positioned_nodes, true);
-
-                                x_current.horizontal_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
+                                let edge = create_edge(a, b);
+                                x_current.horizontal_edges.push(Rc::new(RefCell::new(edge)));
                             }
                         }
                         // Create an edge on the right
                         if x == args.area_count_x - 1 {
                             if let Some(b) = nearest_x_without_border(&x_current.positioned_nodes, false) {
                                 let a = nearest_x(&x_current.positioned_nodes, false);
-
-                                x_current.horizontal_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
+                                let edge = create_edge(a, b);
+                                x_current.horizontal_edges.push(Rc::new(RefCell::new(edge)));
                             }
                         }
                     } else {
@@ -541,22 +536,16 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                         if y == 0 {
                             if let Some(b) = nearest_y_without_border(&x_current.positioned_nodes, true) {
                                 let a = nearest_y(&x_current.positioned_nodes, true);
-
-                                x_current.vertical_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
+                                let edge = create_edge(a, b);
+                                x_current.vertical_edges.push(Rc::new(RefCell::new(edge)));
                             }
                         }
                         // Create an edge on the bottom
                         if y == args.area_count_y - 1 {
                             if let Some(b) = nearest_y_without_border(&x_current.positioned_nodes, false) {
                                 let a = nearest_y(&x_current.positioned_nodes, false);
-
-                                x_current.vertical_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
+                                let edge = create_edge(a, b);
+                                x_current.vertical_edges.push(Rc::new(RefCell::new(edge)));
                             }
                         }
                     }
@@ -568,10 +557,8 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                         if let Some(a) = nearest_x_without_border(&x_current.positioned_nodes, true) {
                             if let Some(b) = nearest_x_without_border(&x_current.positioned_nodes, false) {
                                 if a.loc != b.loc {
-                                    x_current.horizontal_edges.push(Rc::new(Edge {
-                                        a: Rc::clone(&a.node),
-                                        b: Rc::clone(&b.node),
-                                    }));
+                                    let edge = create_edge(a, b);
+                                    x_current.horizontal_edges.push(Rc::new(RefCell::new(edge)));
                                 }
                             }
                         }
@@ -579,10 +566,8 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                         if let Some(a) = nearest_y_without_border(&x_current.positioned_nodes, true) {
                             if let Some(b) = nearest_y_without_border(&x_current.positioned_nodes, false) {
                                 if a.loc != b.loc {
-                                    x_current.vertical_edges.push(Rc::new(Edge {
-                                        a: Rc::clone(&a.node),
-                                        b: Rc::clone(&b.node),
-                                    }));
+                                    let edge = create_edge(a, b);
+                                    x_current.vertical_edges.push(Rc::new(RefCell::new(edge)));
                                 }
                             }
                         }
@@ -599,14 +584,10 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                                     if let Location::Right | Location::LeftRight = a.loc {
                                         let b = nearest_x(&x_current.positioned_nodes, true);
 
-                                        x_current.horizontal_edges.push(Rc::new(Edge {
-                                            a: Rc::clone(&a.node),
-                                            b: Rc::clone(&b.node),
-                                        }));
-                                        left.horizontal_edges.push(Rc::new(Edge {
-                                            a: Rc::clone(&a.node),
-                                            b: Rc::clone(&b.node),
-                                        }));
+                                        let edge = RefCell::new(create_edge(a, b));
+                                        let edge = Rc::new(edge);
+                                        x_current.horizontal_edges.push(Rc::clone(&edge));
+                                        left.horizontal_edges.push(Rc::clone(&edge));
                                     }
                                 }
                             }
@@ -618,14 +599,10 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                                     if let Location::Left | Location::LeftRight = a.loc {
                                         let b = nearest_x(&x_current.positioned_nodes, false);
 
-                                        x_current.horizontal_edges.push(Rc::new(Edge {
-                                            a: Rc::clone(&a.node),
-                                            b: Rc::clone(&b.node),
-                                        }));
-                                        right.horizontal_edges.push(Rc::new(Edge {
-                                            a: Rc::clone(&a.node),
-                                            b: Rc::clone(&b.node),
-                                        }));
+                                        let edge = RefCell::new(create_edge(a, b));
+                                        let edge = Rc::new(edge);
+                                        x_current.horizontal_edges.push(Rc::clone(&edge));
+                                        right.horizontal_edges.push(Rc::clone(&edge));
                                     }
                                 }
                             }
@@ -639,14 +616,10 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                                     if let Location::Bottom | Location::TopBottom = a.loc {
                                         let b = nearest_y(&x_current.positioned_nodes, true);
 
-                                        x_current.vertical_edges.push(Rc::new(Edge {
-                                            a: Rc::clone(&a.node),
-                                            b: Rc::clone(&b.node),
-                                        }));
-                                        top.vertical_edges.push(Rc::new(Edge {
-                                            a: Rc::clone(&a.node),
-                                            b: Rc::clone(&b.node),
-                                        }));
+                                        let edge = RefCell::new(create_edge(a, b));
+                                        let edge = Rc::new(edge);
+                                        x_current.vertical_edges.push(Rc::clone(&edge));
+                                        top.vertical_edges.push(Rc::clone(&edge));
                                     }
                                 }
                             }
@@ -659,14 +632,10 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                                     if let Location::Top | Location::TopBottom = a.loc {
                                         let b = nearest_y(&x_current.positioned_nodes, false);
 
-                                        x_current.vertical_edges.push(Rc::new(Edge {
-                                            a: Rc::clone(&a.node),
-                                            b: Rc::clone(&b.node),
-                                        }));
-                                        bottom.vertical_edges.push(Rc::new(Edge {
-                                            a: Rc::clone(&a.node),
-                                            b: Rc::clone(&b.node),
-                                        }));
+                                        let edge = RefCell::new(create_edge(a, b));
+                                        let edge = Rc::new(edge);
+                                        x_current.vertical_edges.push(Rc::clone(&edge));
+                                        bottom.vertical_edges.push(Rc::clone(&edge));
                                     }
                                 }
                             }
@@ -759,18 +728,11 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                                 None
                             };
                             if let (Some(a), Some(b)) = (a, b) {
-                                x_current.horizontal_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
-                                left.horizontal_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
-                                right.horizontal_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
+                                let edge = RefCell::new(create_edge(a, b));
+                                let edge = Rc::new(edge);
+                                x_current.horizontal_edges.push(Rc::clone(&edge));
+                                left.horizontal_edges.push(Rc::clone(&edge));
+                                right.horizontal_edges.push(Rc::clone(&edge));
                             }
                         }
                     }
@@ -797,21 +759,23 @@ pub fn create_edges(args: &Args, field: &mut Vec2<DividedArea>) {
                                 None
                             };
                             if let (Some(a), Some(b)) = (a, b) {
-                                x_current.vertical_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
-                                top.vertical_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
-                                bottom.vertical_edges.push(Rc::new(Edge {
-                                    a: Rc::clone(&a.node),
-                                    b: Rc::clone(&b.node),
-                                }));
+                                let edge = RefCell::new(create_edge(a, b));
+                                let edge = Rc::new(edge);
+                                x_current.vertical_edges.push(Rc::clone(&edge));
+                                top.vertical_edges.push(Rc::clone(&edge));
+                                bottom.vertical_edges.push(Rc::clone(&edge));
                             }
                         }
                     }
+                }
+            }
+
+            fn create_edge(a: &PositionedNode, b: &PositionedNode) -> Edge {
+                Edge {
+                    a: Rc::clone(&a.node),
+                    b: Rc::clone(&b.node),
+                    is_protected: false,
+                    is_enabled: true,
                 }
             }
         }
@@ -1103,17 +1067,17 @@ pub fn combine_regions(args: &Args, field: &Vec2<DividedArea>) -> Vec<CombinedRe
                 }
             }
 
-            fn get_side_edges_x(area: &DividedArea, rect: &Rectangle) -> Vec<Rc<Edge>> {
+            fn get_side_edges_x(area: &DividedArea, rect: &Rectangle) -> Vec<Rc<RefCell<Edge>>> {
                 area.horizontal_edges
                     .iter()
-                    .filter(|&edge| rect.intersects_x(&edge.to_rect()))
+                    .filter(|&edge| rect.intersects_x(&edge.borrow().to_rect()))
                     .map(|edge| Rc::clone(edge))
                     .collect()
             }
-            fn get_side_edges_y(area: &DividedArea, rect: &Rectangle) -> Vec<Rc<Edge>> {
+            fn get_side_edges_y(area: &DividedArea, rect: &Rectangle) -> Vec<Rc<RefCell<Edge>>> {
                 area.vertical_edges
                     .iter()
-                    .filter(|&edge| rect.intersects_y(&edge.to_rect()))
+                    .filter(|&edge| rect.intersects_y(&edge.borrow().to_rect()))
                     .map(|edge| Rc::clone(edge))
                     .collect()
             }
@@ -1172,6 +1136,41 @@ pub fn create_rooms(args: &mut Args, regions: &mut Vec<CombinedRegion>) -> Resul
             Err(GenerationError::GE0002(args.room_count, candidates.len()))
         } else {
             Err(GenerationError::GE0003(args.room_count, candidates.len()))
+        }
+    }
+}
+
+pub fn remove_edges(regions: &Vec<CombinedRegion>) {
+    for region in regions {
+        if let Some(room) = &region.room {
+            if room.is_horizontal {
+                for edge in &region.side_edges_y {
+                    edge.borrow_mut().is_protected = true;
+                }
+            } else {
+                for edge in &region.side_edges_x {
+                    edge.borrow_mut().is_protected = true;
+                }
+            }
+        }
+    }
+    for region in regions {
+        if let Some(room) = &region.room {
+            if room.is_horizontal {
+                for edge in &region.side_edges_x {
+                    let mut edge = edge.borrow_mut();
+                    if !edge.is_protected {
+                        edge.is_enabled = false;
+                    }
+                }
+            } else {
+                for edge in &region.side_edges_y {
+                    let mut edge = edge.borrow_mut();
+                    if !edge.is_protected {
+                        edge.is_enabled = false;
+                    }
+                }
+            }
         }
     }
 }

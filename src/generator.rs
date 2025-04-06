@@ -13,13 +13,13 @@ pub struct Args {
 }
 
 pub fn generate_0(args: &Args) -> Vec2<Rectangle> {
-    builder::create_field(args)
+    let field = builder::create_field(args);
+    field
 }
 
 pub fn generate_1(args: &mut Args) -> Result<Vec2<DividedArea>, GenerationError> {
     let field = builder::create_field(args);
     let field = builder::create_paths(args, field);
-
     field
 }
 
@@ -32,7 +32,6 @@ pub fn generate_2(args: &mut Args) -> Result<Vec2<DividedArea>, GenerationError>
     builder::extend_paths(args, &mut field);
     builder::create_nodes(args, &mut field);
     builder::create_edges(args, &mut field);
-
     Ok(field)
 }
 
@@ -46,7 +45,6 @@ pub fn generate_3(args: &mut Args) -> Result<Vec<CombinedRegion>, GenerationErro
     builder::create_nodes(args, &mut field);
     builder::create_edges(args, &mut field);
     let regions = builder::combine_regions(args, &field);
-
     Ok(regions)
 }
 
@@ -64,7 +62,6 @@ pub fn generate_4(args: &mut Args) -> Result<Vec<CombinedRegion>, GenerationErro
         Ok(_) => (),
         Err(e) => return Err(e),
     };
-
     Ok(regions)
 }
 
@@ -83,6 +80,5 @@ pub fn generate_5(args: &mut Args) -> Result<(Vec2<DividedArea>, Vec<CombinedReg
         Err(e) => return Err(e),
     };
     builder::remove_edges(&regions);
-
     Ok((field, regions))
 }

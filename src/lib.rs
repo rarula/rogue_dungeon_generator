@@ -25,9 +25,6 @@ mod tests {
         use super::create_args;
         use super::generator;
 
-        // #[test]
-        // fn step_0() {}
-
         #[test]
         fn step_1() {
             let mut args = create_args();
@@ -48,6 +45,22 @@ mod tests {
         fn step_3() {
             let mut args = create_args();
             let output = generator::generate_3(&mut args);
+
+            assert!(output.is_ok());
+        }
+
+        #[test]
+        fn step_4() {
+            let mut args = create_args();
+            let output = generator::generate_4(&mut args);
+
+            assert!(output.is_ok());
+        }
+
+        #[test]
+        fn step_5() {
+            let mut args = create_args();
+            let output = generator::generate_5(&mut args);
 
             assert!(output.is_ok());
         }
@@ -123,8 +136,8 @@ mod tests {
 
             match output {
                 Ok((v0, v1)) => {
-                    // println!("GENERATED AREAS:\n{:#?}", v0);
-                    // println!("GENERATED REGIONS:\n{:#?}", v1);
+                    println!("GENERATED AREAS:\n{:#?}", v0);
+                    println!("GENERATED REGIONS:\n{:#?}", v1);
                     println!("VISUALIZED:\n{}", visualizer::visualizer_5(&args, &v0, &v1))
                 }
                 Err(e) => println!("ERROR:\n{}", e),

@@ -1113,20 +1113,37 @@ pub fn create_rooms(args: &mut Args, regions: &mut Vec<CombinedRegion>) -> Resul
 
     if args.room_count <= candidates.len() {
         for candidate in candidates {
-            let size = Size {
-                x: args.rng.random_range(candidate.rect.size.x / 2..candidate.rect.size.x - 1),
-                y: args.rng.random_range(candidate.rect.size.y / 2..candidate.rect.size.y - 1),
-            };
-            let pos = Position {
-                x: candidate.rect.pos.x + 1 + args.rng.random_range(0..candidate.rect.size.x - 1 - size.x),
-                y: candidate.rect.pos.y + 1 + args.rng.random_range(0..candidate.rect.size.y - 1 - size.y),
+            let is_horizontal = args.rng.random_bool(0.5);
+            let size: Size;
+            let pos: Position;
+
+            if is_horizontal {
+                size = Size {
+                    x: candidate.rect.size.x,
+                    y: args.rng.random_range(candidate.rect.size.y / 2..candidate.rect.size.y - 1),
+                };
+                pos = Position {
+                    x: candidate.rect.pos.x,
+                    y: candidate.rect.pos.y + 1 + args.rng.random_range(0..candidate.rect.size.y - 1 - size.y),
+                };
+            } else {
+                size = Size {
+                    x: args.rng.random_range(candidate.rect.size.x / 2..candidate.rect.size.x - 1),
+                    y: candidate.rect.size.y,
+                };
+                pos = Position {
+                    x: candidate.rect.pos.x + 1 + args.rng.random_range(0..candidate.rect.size.x - 1 - size.x),
+                    y: candidate.rect.pos.y,
+                };
+            }
+
+            let rect = Rectangle {
+                pos,
+                size,
             };
             let room = Room {
-                rect: Rectangle {
-                    pos,
-                    size,
-                },
-                is_horizontal: args.rng.random_bool(0.5),
+                rect,
+                is_horizontal,
             };
             candidate.room = Some(room);
         }

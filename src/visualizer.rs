@@ -109,61 +109,6 @@ pub fn visualizer_5(args: &Args, field: &Vec2<DividedArea>, regions: &Vec<Combin
             } else {
                 fill(&room.rect, '|');
             }
-            if room.is_horizontal {
-                {
-                    let rect = Rectangle {
-                        pos: Position {
-                            x: region.rect.pos.x,
-                            y: room.rect.pos.y,
-                        },
-                        size: Size {
-                            x: room.rect.pos.x - region.rect.pos.x,
-                            y: room.rect.size.y,
-                        },
-                    };
-                    fill(&rect, '-');
-                }
-                {
-                    let rect = Rectangle {
-                        pos: Position {
-                            x: room.rect.pos.x + room.rect.size.x,
-                            y: room.rect.pos.y,
-                        },
-                        size: Size {
-                            x: (region.rect.pos.x + region.rect.size.x) - (room.rect.pos.x + room.rect.size.x),
-                            y: room.rect.size.y,
-                        },
-                    };
-                    fill(&rect, '-');
-                }
-            } else {
-                {
-                    let rect = Rectangle {
-                        pos: Position {
-                            x: room.rect.pos.x,
-                            y: region.rect.pos.y,
-                        },
-                        size: Size {
-                            x: room.rect.size.x,
-                            y: room.rect.pos.y - region.rect.pos.y,
-                        },
-                    };
-                    fill(&rect, '|');
-                }
-                {
-                    let rect = Rectangle {
-                        pos: Position {
-                            x: room.rect.pos.x,
-                            y: room.rect.pos.y + room.rect.size.y,
-                        },
-                        size: Size {
-                            x: room.rect.size.x,
-                            y: (region.rect.pos.y + region.rect.size.y) - (room.rect.pos.y + room.rect.size.y),
-                        },
-                    };
-                    fill(&rect, '|');
-                }
-            }
         }
     }
 

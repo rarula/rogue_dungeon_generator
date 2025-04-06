@@ -1,50 +1,21 @@
-use std::{cell::RefCell, rc::Rc};
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub type Vec2<T> = Vec<Vec<T>>;
 
-#[derive(Hash, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Position {
     pub x: i32,
     pub y: i32,
 }
 
-impl Clone for Position {
-    fn clone(&self) -> Self {
-        Self {
-            x: self.x,
-            y: self.y,
-        }
-    }
-}
-
-impl PartialEq for Position {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y
-    }
-}
-
-#[derive(Hash, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Size {
     pub x: i32,
     pub y: i32,
 }
 
-impl Clone for Size {
-    fn clone(&self) -> Self {
-        Self {
-            x: self.x,
-            y: self.y,
-        }
-    }
-}
-
-impl PartialEq for Size {
-    fn eq(&self, other: &Self) -> bool {
-        self.x == other.x && self.y == other.y
-    }
-}
-
-#[derive(Hash, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Rectangle {
     pub pos: Position,
     pub size: Size,
@@ -111,21 +82,6 @@ impl Rectangle {
 
     pub fn intersects_y(&self, other: &Self) -> bool {
         self.pos.y < other.pos.y + other.size.y && other.pos.y < self.pos.y + self.size.y
-    }
-}
-
-impl Clone for Rectangle {
-    fn clone(&self) -> Self {
-        Self {
-            pos: self.pos.clone(),
-            size: self.size.clone(),
-        }
-    }
-}
-
-impl PartialEq for Rectangle {
-    fn eq(&self, other: &Self) -> bool {
-        self.pos == other.pos && self.size == other.size
     }
 }
 
@@ -230,7 +186,7 @@ pub enum Region {
     Bottom(Rectangle),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct CombinedRegion {
     pub rect: Rectangle,
     pub side_edges_x: Vec<Rc<RefCell<Edge>>>,
@@ -239,23 +195,17 @@ pub struct CombinedRegion {
 }
 
 #[derive(Debug)]
-pub struct Subarea {
-    pub rect: Rectangle,
-    pub room: Room,
-}
-
-#[derive(Clone, Debug)]
 pub struct Room {
     pub rect: Rectangle,
     pub is_horizontal: bool,
 }
 
-#[derive(Hash, PartialEq, Eq, Debug)]
+#[derive(Debug)]
 pub struct Node {
     pub rect: Rectangle,
 }
 
-#[derive(Clone, Hash, PartialEq, Eq, Debug)]
+#[derive(Debug)]
 pub struct Edge {
     pub a: Rc<Node>,
     pub b: Rc<Node>,
